@@ -44,7 +44,7 @@ def idle():
     cozmars_rpc_server.button.hold_time = 5
     cozmars_rpc_server.button.when_held = lambda: asyncio.run_coroutine_threadsafe(_poweroff(), server_loop)
 
-def attach_endponts(app: Sanic):
+def attach_endponts(app: sanic.Sanic):
     @app.listener("before_server_start")
     async def before_server_start(request, loop):
         global cozmars_rpc_server, dim_screen_task, server_loop
