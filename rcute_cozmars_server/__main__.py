@@ -46,9 +46,7 @@ def idle():
     cozmars_rpc_server.button.hold_time = 5
     cozmars_rpc_server.button.when_held = lambda: asyncio.run_coroutine_threadsafe(_poweroff(), server_loop)
 
-def create_app():
-    app = sanic.Sanic(__name__)
-
+def attach_endponts(app: Sanic):
     @app.listener("before_server_start")
     async def before_server_start(request, loop):
         global cozmars_rpc_server, dim_screen_task, server_loop
@@ -184,10 +182,13 @@ def create_app():
                     </p>""".format(_("Upgrade complete, will be effective after restarting service"), _("Restart service")))
         return sanic.response.stream(streaming_fn, content_type='text/html; charset=utf-8')
 
+def create_app():
+    app = sanic.Sanic(__name__)
+    attach_endponts(app)
     return app
 
-# if __name__ == "__main__":
-app_loader = AppLoader(factory=partial(create_app))
-app = app_loader.load()
-app.run(host="0.0.0.0", port=80, debug=False)
-# app.run(host="0.0.0.0", port=80)
+if __name__ == "__main__":
+    app_loader = AppLoader(factory=partial(create_app))
+    app = app_loader.load()
+    app.run(host="0.0.0.0", port=80, debug=False)
+    # app.run(host="0.0.0.0", port=80)
