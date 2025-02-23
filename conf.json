@@ -1,5 +1,5 @@
 {
-  "touch": 14,
+  "button": 4,
   "ir": {
     "left": 13,
     "right": 26,
@@ -54,8 +54,8 @@
     "update_rate": 20
   },
   "sonar": {
-    "io": 16,
-    "rgb": 12,
+    "echo": 13,
+    "trigger": 26,
     "max": 0.5,
     "threshold": 0.1
   },
