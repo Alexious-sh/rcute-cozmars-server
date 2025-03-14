@@ -2,8 +2,7 @@
   "touch": 14,
   "ir": {
     "left": 13,
-    "right": 26,
-    "middle":
+    "right": 26
   },
   "motor": {
     "right": [
