@@ -453,18 +453,22 @@ class CozmarsServer:
         return self._volume('PCM', value)
 
     async def capture(self, options):
-        import picamera, io
-        if self.cam is None or self.cam.closed:
-            self.cam = picamera.PiCamera()
-            self.cam.vflip = self.cam.hflip = True
+        import picamera2, io, libcamera
+        if self.cam is None or not self.cam.started:
+            self.cam = picamera2.Picamera2()
+            #self.cam.vflip = self.cam.hflip = True
         delay = options.pop('delay', 0)
         standby = options.pop('standby', False)
         try:
-            buf = io.BytesIO()
+            #buf = io.BytesIO()
             delay and await asyncio.sleep(delay)
-            self.cam.capture(buf, **options)
-            buf.seek(0)
-            return buf.read()
+            camera_config = self.cam.create_still_configuration(transform=libcamera.Transform(hflip=True, vflip=True), main=options)
+            self.cam.configure(camera_config)
+            self.cam.start()
+            #self.cam.capture_file(buf, format='jpeg')
+            #buf.seek(0)
+            #return buf.read()
+            return self.cam.capture_buffer()
         finally:
             not standby and self.cam.close()
 
