@@ -461,10 +461,10 @@ class CozmarsServer:
         format = options.pop('image_format', 'jpeg')
         try:
             buf = io.BytesIO()
-            delay and await asyncio.sleep(delay)
             camera_config = self.cam.create_still_configuration(transform=libcamera.Transform(hflip=True, vflip=True), main=options)
             self.cam.configure(camera_config)
             self.cam.start()
+            delay and await asyncio.sleep(delay)
             self.cam.capture_file(buf, format=format)
             buf.seek(0)
             return buf.read()
