@@ -472,6 +472,7 @@ class CozmarsServer:
             not standby and self.cam.close()
 
     async def camera(self, width, height, framerate):
+        print("Camera requested")
         import picamera2, libcamera, io, threading
         try:
             queue = RPCStream(2)
@@ -479,37 +480,37 @@ class CozmarsServer:
 
             def bg_run(loop):
                 nonlocal queue, stop_ev, width, height, framerate
-                with picamera2.Picamera2() as cam:
-                    print('Starting camera...')
-                    config = cam.create_still_configuration(
-                        transform=libcamera.Transform(hflip=True, vflip=True),
-                        main={
-                            "format": 'YUV420',
-                            "size": (width, height)
-                        },
-                        #controls={'FrameRate': framerate}
-                    )
-                    cam.configure(config)
-                    print('Camera configured')
-                    #cam.start_preview(picamera2.Preview.DRM)
-                    cam.start()
-                    print('Camera started')
-                    # Camera warm-up time
-                    #time.sleep(2)
-                    stream = io.BytesIO()
+                cam = picamera2.Picamera2()
+                print('Starting camera...')
+                config = cam.create_still_configuration(
+                    transform=libcamera.Transform(hflip=True, vflip=True),
+                    main={
+                        "format": 'YUV420',
+                        "size": (width, height)
+                    },
+                    #controls={'FrameRate': framerate}
+                )
+                cam.configure(config)
+                print('Camera configured')
+                #cam.start_preview(picamera2.Preview.DRM)
+                cam.start()
+                print('Camera started')
+                # Camera warm-up time
+                #time.sleep(2)
+                stream = io.BytesIO()
+                timestamp = time.time()
+                while True:
+                    if stop_ev.isSet():
+                        break
+                    print('Capturing frame...')
+                    cam.capture_file(stream, format='jpeg')
+                    print(f"Captured frame in {time.time()-timestamp:.2f}s")
                     timestamp = time.time()
-                    while True:
-                        if stop_ev.isSet():
-                            break
-                        print('Capturing frame...')
-                        cam.capture_file(stream, format='jpeg')
-                        print(f"Captured frame in {time.time()-timestamp:.2f}s")
-                        timestamp = time.time()
-                        stream.truncate()
-                        stream.seek(0)
-                        loop.call_soon_threadsafe(queue.force_put_nowait, stream.read())
-                        # queue.put_nowait(stream.read())
-                        stream.seek(0)
+                    stream.truncate()
+                    stream.seek(0)
+                    loop.call_soon_threadsafe(queue.force_put_nowait, stream.read())
+                    # queue.put_nowait(stream.read())
+                    stream.seek(0)
 
             loop = asyncio.get_running_loop()
             # threading.Thread(target=bg_run, args=[loop]).start()
