@@ -494,9 +494,13 @@ class CozmarsServer:
                     # Camera warm-up time
                     time.sleep(2)
                     stream = io.BytesIO()
-                    for _ in cam.capture_file(stream, format='jpeg'):
+                    timestamp = time.time()
+                    while True:
                         if stop_ev.isSet():
                             break
+                        cam.capture_file(stream, format='jpeg')
+                        print(f"Captured frame in {time.time()-timestamp:.2f}s")
+                        timestamp = time.time()
                         stream.truncate()
                         stream.seek(0)
                         loop.call_soon_threadsafe(queue.force_put_nowait, stream.read())
