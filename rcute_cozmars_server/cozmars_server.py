@@ -480,7 +480,7 @@ class CozmarsServer:
             def bg_run(loop):
                 nonlocal queue, stop_ev, width, height, framerate
                 with picamera2.Picamera2() as cam:
-                    config = cam.create_preview_configuration(
+                    config = cam.create_still_configuration(
                         transform=libcamera.Transform(hflip=True, vflip=True),
                         main={
                             "format": 'YUV420',
