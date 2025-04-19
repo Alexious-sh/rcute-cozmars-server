@@ -472,8 +472,7 @@ class CozmarsServer:
             not standby and self.cam.close()
 
     async def camera(self, width, height, framerate):
-        print("Camera requested")
-        import picamera2, libcamera, io, threading
+        import picamera2, io, threading
         try:
             queue = RPCStream(2)
             stop_ev = threading.Event()
@@ -481,8 +480,7 @@ class CozmarsServer:
             def bg_run(loop):
                 nonlocal queue, stop_ev, width, height, framerate
                 cam = picamera2.Picamera2()
-                print('Starting camera...')
-                config = cam.create_video_configuration(
+                config = cam.create_preview_configuration(
                     main={
                         "format": 'RGB888',
                         "size": (width, height)
