@@ -482,13 +482,12 @@ class CozmarsServer:
                 nonlocal queue, stop_ev, width, height, framerate
                 cam = picamera2.Picamera2()
                 print('Starting camera...')
-                config = cam.create_still_configuration(
-                    transform=libcamera.Transform(hflip=True, vflip=True),
+                config = cam.create_video_configuration(
                     main={
-                        "format": 'YUV420',
+                        "format": 'RGB888',
                         "size": (width, height)
                     },
-                    #controls={'FrameRate': framerate}
+                    controls={'FrameRate': framerate}
                 )
                 cam.configure(config)
                 print('Camera configured')
@@ -496,12 +495,10 @@ class CozmarsServer:
                 cam.start()
                 print('Camera started')
                 # Camera warm-up time
-                #time.sleep(2)
+                time.sleep(2)
                 stream = io.BytesIO()
                 timestamp = time.time()
-                while True:
-                    if stop_ev.isSet():
-                        break
+                while not stop_ev.is_set():
                     print('Capturing frame...')
                     cam.capture_file(stream, format='jpeg')
                     print(f"Captured frame in {time.time()-timestamp:.2f}s")
@@ -517,6 +514,7 @@ class CozmarsServer:
             bg_task = loop.run_in_executor(None, bg_run, loop)
 
             while True:
+                print('Waiting for frame...')
                 yield await queue.get()
 
         finally:
