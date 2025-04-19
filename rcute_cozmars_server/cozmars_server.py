@@ -490,31 +490,26 @@ class CozmarsServer:
                     controls={'FrameRate': framerate}
                 )
                 cam.configure(config)
-                print('Camera configured')
-                #cam.start_preview(picamera2.Preview.DRM)
                 cam.start()
-                print('Camera started')
                 # Camera warm-up time
-                time.sleep(2)
+                #time.sleep(2)
                 stream = io.BytesIO()
-                timestamp = time.time()
                 while not stop_ev.is_set():
-                    print('Capturing frame...')
                     cam.capture_file(stream, format='jpeg')
-                    print(f"Captured frame in {time.time()-timestamp:.2f}s")
-                    timestamp = time.time()
                     stream.truncate()
                     stream.seek(0)
                     loop.call_soon_threadsafe(queue.force_put_nowait, stream.read())
                     # queue.put_nowait(stream.read())
                     stream.seek(0)
+                
+                cam.stop()
+                cam.close()
 
             loop = asyncio.get_running_loop()
             # threading.Thread(target=bg_run, args=[loop]).start()
             bg_task = loop.run_in_executor(None, bg_run, loop)
 
             while True:
-                print('Waiting for frame...')
                 yield await queue.get()
 
         finally:
