@@ -487,6 +487,7 @@ class CozmarsServer:
                     },
                     controls={'FrameRate': framerate}
                 )
+                cam.align_configuration(config)
                 cam.configure(config)
                 cam.start()
                 # Camera warm-up time
