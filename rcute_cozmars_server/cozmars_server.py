@@ -441,16 +441,16 @@ class CozmarsServer:
     def _volume(self, control, value):
         from subprocess import check_output
         if value:
-            check_output(f'amixer set {control} {value}%'.split(' '))
+            check_output(['amixer', 'set', control, f'{value}%'])
         else:
-            a = check_output(f'amixer get {control}'.split(' '))
+            a = check_output(['amixer', 'get', control])
             return int(a[a.index(b'[') + 1 : a.index(b'%')])
 
     def microphone_volume(self, value=None):
-        return self._volume('Boost', value)
+        return self._volume(self.conf['sound']['mic_control'], value)
 
     def speaker_volume(self, value=None):
-        return self._volume('PCM', value)
+        return self._volume(self.conf['sound']['speaker_control'], value)
 
     async def capture(self, options):
         import picamera2, io, libcamera

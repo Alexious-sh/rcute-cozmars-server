@@ -3,16 +3,17 @@ import sanic
 from subprocess import check_call
 from wsmprpc import RPCServer
 from .cozmars_server import CozmarsServer
-from . import util
+from . import util, eye_animation
 from .version import __version__
 from websockets.exceptions import ConnectionClosedOK
+
 _ = util._
 parsed_template = util.parsed_template
 
 async def dim_screen(sec):
     global cozmars_rpc_server
     await asyncio.sleep(sec)
-    cozmars_rpc_server._screen_backlight(.002)
+    cozmars_rpc_server._screen_backlight(.05)
 
 def lightup_screen(sec):
     global cozmars_rpc_server, dim_screen_task, server_loop
@@ -32,14 +33,14 @@ async def _poweroff():
     try:
         await util.beep(cozmars_rpc_server)
     except Exception as e:
-        print(e)        
+        print(e)
     await zero_position()
     await delay_check_call(5, 'sudo poweroff')
 
 def idle():
     global cozmars_rpc_server, server_loop
     cozmars_rpc_server.screen.image(util.splash_screen())
-    cozmars_rpc_server._screen_backlight(0.002)
+    cozmars_rpc_server._screen_backlight(0.05)
     cozmars_rpc_server.button.when_pressed = lambda: lightup_screen(5)
     cozmars_rpc_server.button.hold_time = 5
     cozmars_rpc_server.button.when_held = lambda: asyncio.run_coroutine_threadsafe(_poweroff(), server_loop)
@@ -54,12 +55,15 @@ async def before_server_start(request, loop):
     cozmars_rpc_server = CozmarsServer()
     idle()
     lightup_screen(5)
-    cozmars_rpc_server.speaker_volume(50)
-    cozmars_rpc_server.microphone_volume(100)
+    cozmars_rpc_server.speaker_volume(cozmars_rpc_server.conf['sound']['speaker_volume'])
+    cozmars_rpc_server.microphone_volume(cozmars_rpc_server.conf['sound']['mic_volume'])
     try:
         await util.beep(cozmars_rpc_server)
     except Exception as e:
         print(e)
+
+    eye_anim = eye_animation.EyeAnimation(cozmars_rpc_server)
+    eye_anim_task = asyncio.create_task(eye_anim.animate(cozmars_rpc_server))
 
 app.static('/static', util.STATIC)
 app.static('/conf', util.CONF, content_type="application/json")

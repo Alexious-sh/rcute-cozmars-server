@@ -58,6 +58,12 @@
     "max": 0.5,
     "threshold": 0.1
   },
+  "sound": {
+      "mic_control": "Mic Boost",
+      "mic_volume": 75,
+      "speaker_control": "Master",
+      "speaker_volume": 80
+  },
   "upgrade": {
     "cmd": "sudo python3 -m pip install rcute-cozmars-server==2.* -U"
   }
