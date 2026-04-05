@@ -117,10 +117,10 @@ class EyeAnimation:
     def _apply_expression(self, robo, exp):
         robo.fgcolor = self._bgr_to_rgb(self._color)
         robo.bgcolor = (0, 0, 0)
-        robo.eyes_width(36, 36)
-        robo.eyes_height(36, 36)
-        robo.eyes_radius(8, 8)
-        robo.eyes_spacing(10)
+        robo.eyes_width(80, 80)
+        robo.eyes_height(80, 80)
+        robo.eyes_radius(20, 20)
+        robo.eyes_spacing(20)
         robo.horiz_flicker(False)
         robo.vert_flicker(False)
         robo.curious = False
@@ -141,7 +141,7 @@ class EyeAnimation:
             robo.position = random.choice((S, SE, SW))
         elif exp == "sleepy":
             robo.mood = TIRED
-            robo.eyes_height(28, 28)
+            #robo.eyes_height(28, 28)
             robo.set_idle_mode(True, 3, 2)
             robo.set_auto_blinker(True, 2, 3)
             robo.position = S
@@ -152,15 +152,15 @@ class EyeAnimation:
             robo.position = random.choice((E, W, NE, NW))
         elif exp == "focused":
             robo.mood = CURIOUS
-            robo.eyes_height(24, 24)
-            robo.eyes_spacing(6)
+            #robo.eyes_height(24, 24)
+            #robo.eyes_spacing(6)
             robo.set_idle_mode(True, 1, 1)
             robo.set_auto_blinker(True, 2, 1)
             robo.position = random.choice((E, W, DEFAULT))
         elif exp == "surprised":
             robo.mood = DEFAULT
-            robo.eyes_width(40, 40)
-            robo.eyes_height(42, 42)
+            #robo.eyes_width(40, 40)
+            #robo.eyes_height(42, 42)
             robo.set_idle_mode(True, 1, 2)
             robo.set_auto_blinker(True, 1, 2)
             robo.position = random.choice((N, NE, NW, DEFAULT))
