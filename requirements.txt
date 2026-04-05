@@ -3,8 +3,8 @@ adafruit-circuitpython-rgb-display
 gpiozero
 picamera
 sounddevice
-websockets==10.4
-sanic==22.9.1
+websockets==9.1
+sanic==20.12.7
 wsmprpc>=1.1.2
 Pillow
 # sudo apt install libtiff5 libopenjp2-7 libportaudio2 python3-cffi 
