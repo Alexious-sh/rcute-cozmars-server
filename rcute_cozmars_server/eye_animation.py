@@ -186,7 +186,7 @@ class EyeAnimation:
         robo = RoboEyes(
             width=240,
             height=135,
-            frame_rate=20,
+            frame_rate=5,
             bgcolor=(0, 0, 0),
             fgcolor=self._bgr_to_rgb(self._color),
             on_show=lambda r: robot.screen.image(r.fb),
@@ -222,3 +222,4 @@ class EyeAnimation:
 
             self._apply_expression(robo, active_expression)
             robo.update()
+            await asyncio.sleep(0)
